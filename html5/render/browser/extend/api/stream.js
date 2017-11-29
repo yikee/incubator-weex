@@ -30,7 +30,7 @@ let jsonpCnt = 0
 const ERROR_STATE = -1
 
 function _jsonp (config, callback, progressCallback) {
-  const cbName = 'jsonp_' + (++jsonpCnt)
+  const cbName = config.jsonpCallbackName || 'jsonp_' + (++jsonpCnt)
   let url
 
   if (!config.url) {
@@ -245,9 +245,14 @@ const stream = {
       let hashIdx = url.indexOf('#')
       hashIdx <= -1 && (hashIdx = url.length)
       let hash = url.substr(hashIdx)
-      hash && (hash = '#' + hash)
+      if (hash && hash[0] === '#') {
+        hash = hash.substr(1)
+      }
       url = url.substring(0, hashIdx)
-      url += (config.url.indexOf('?') <= -1 ? '?' : '&') + body + hash
+      if (body) {
+        url += (config.url.indexOf('?') <= -1 ? '?' : '&') + body
+      }
+      url += '#' + hash
       config.url = url
     }
 

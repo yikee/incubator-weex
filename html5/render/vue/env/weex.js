@@ -34,17 +34,53 @@ const weex = {
   },
 
   _components: {},
+  _modules: weexModules,
+
+  _meta: {
+    mounted: {},
+    updated: {},
+    destroyed: {},
+    requiredModules: {},
+    apiCalled: {},
+    perf: {}
+  },
 
   document: {
     body: {}
   },
 
   requireModule (moduleName) {
+    const metaMod = weex._meta.requiredModules
+    if (!metaMod[moduleName]) {
+      metaMod[moduleName] = 0
+    }
+    metaMod[moduleName]++
     return weexModules[moduleName]
   },
 
   registerModule (...args) {
     return this.registerApiModule(...args)
+  },
+
+  support (feature = '') {
+    const match = (feature + '').match(/@(component|module)\/(\w+)(.\w+)?/)
+    if (match) {
+      const type = match[1]
+      const mod = match[2]
+      let method = match[3]
+      method = method && method.replace(/^\./, '')
+      switch (type) {
+        case 'component':
+          return typeof this._components[mod] !== 'undefined'
+        case 'module':
+          const module = weexModules[mod]
+          return module && method ? !!module[method] : !!module
+      }
+    }
+    else {
+      console.warn(`[vue-render] invalid argument for weex.support: ${feature}`)
+      return null
+    }
   },
 
   /**
@@ -85,7 +121,18 @@ const weex = {
     }
     for (const key in module) {
       if (module.hasOwnProperty(key)) {
-        weexModules[name][key] = utils.bind(module[key], this)
+        weexModules[name][key] = function () {
+          const called = weex._meta.apiCalled
+          if (!called[name]) {
+            called[name] = {}
+          }
+          const calledMod = called[name]
+          if (!calledMod[key]) {
+            calledMod[key] = 0
+          }
+          calledMod[key]++
+          return module[key].apply(weex, arguments)
+        }
       }
     }
   },
@@ -94,7 +141,7 @@ const weex = {
     if (!this.__vue__) {
       return console.log('[Vue Render] Vue is not found. Please import Vue.js before register a component.')
     }
-    this._components[name] = 1
+    this._components[name] = 0
     if (component._css) {
       const css = component._css.replace(/\b[+-]?[\d.]+rem;?\b/g, function (m) {
         return parseFloat(m) * 75 * weex.config.env.scale + 'px'

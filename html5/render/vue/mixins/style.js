@@ -17,9 +17,7 @@
  * under the License.
  */
 import {
-  getHeadStyleMap,
-  getComponentStyle,
-  extractComponentStyle
+  getHeadStyleMap
 } from '../core'
 
 import {
@@ -44,7 +42,9 @@ function getIdentifiedBeforeCreate () {
      * For vue-loader ^11.3.x, there's no injectStyle function. The styleSheet
      * is already injected into the head. Just scan it.
      */
-    if (this === this.$root && this.$options && !this._firstScanned) {
+    // async component.
+    if ((this.$vnode && this.$vnode.data && this.$vnode.data.tag === 'component')
+      || (this === this.$root && this.$options && !this._firstScanned)) {
       this._firstScanned = true
       extend(weex._styleMap, getHeadStyleMap())
     }
@@ -54,7 +54,7 @@ function getIdentifiedBeforeCreate () {
      */
     if (((this === this.$root && this.$options)
       || (tagName
-      && !weex._components[tagName]
+      && (typeof weex._components[tagName] === 'undefined')
       && !disposed[tagName]))
       && !this._secondScanned) {
       disposed[tagName] = 1
@@ -65,16 +65,14 @@ function getIdentifiedBeforeCreate () {
       for (; thisHookIdx < len; thisHookIdx++) {
         if (hooks[thisHookIdx]._styleMixin) { break }
       }
-      for (let i = thisHookIdx + 1; i < len; i++) {
-        const func = hooks[i]
-        if (func.name === 'injectStyle') {
-          hooks[i] = function () {
-            // call the original injectStyle hook.
-            func.call(this)
-            // scan the new appended styleSheet.
-            extend(weex._styleMap, getHeadStyleMap())
-            hooks[i] = func
-          }
+      if (thisHookIdx !== len - 1) {
+        const func = hooks[len - 1]
+        hooks[len - 1] = function () {
+          // call the original injectStyle hook.
+          func.call(this)
+          // scan the new appended styleSheet.
+          extend(weex._styleMap, getHeadStyleMap())
+          hooks[len - 1] = func
         }
       }
     }
@@ -93,22 +91,6 @@ export default {
         return
       }
       return normalizeStyle(camelizeKeys(style))
-    },
-
-    _extractComponentStyle () {
-      return extractComponentStyle(this)
-    },
-
-    /**
-     * get style from class, staticClass, style and staticStyle.
-     * merge styles priority: high -> low
-     *  1. data.style (bound style).
-     *  2. data.staticStyle (inline styles).
-     *  3. data.class style (bound class names).
-     *  4. data.staticClass style (scoped styles or static classes).
-     */
-    _getComponentStyle (data) {
-      return getComponentStyle(this)
     },
 
     _getParentRect () {

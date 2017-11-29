@@ -29,7 +29,7 @@ version: 2.1
   - 支持 `text-align` 样式.
   - 支持 `text-decoration` 样式.
   - 支持 `text-overflow` 样式.
-  - 支持 `line-height`样式<sup class="wx-v">0.6.1+</sup> 。`line-height` 在 iOS 中与 H5 和 Android 中不同， 文本值将放置在框的底部。
+  - 支持 `line-height`样式<sup class="wx-v">0.6.1+</sup>
   - 不支持 `flex-direction`, `justify-content`, `align-items` 这些为子节点设置的属性，并且`<text>`没有子节点。
 
 - 通用样式：支持所有通用样式
@@ -62,7 +62,7 @@ version: 2.1
 
 `支持版本:v0.12.0`
 
-支持ttf和woff字体格式的自定义字体, 可以通过调用 `dom` module 里面的 [addRule](../modules/dom.html#addRule)方法, 构建自定义的`font-family`使用
+支持ttf和woff字体格式的自定义字体, 可以通过调用 `dom` module 里面的 [addRule](../modules/dom.html#addRule)方法, 构建自定义的`font-family`使用, addRule 建议在 `beforeCreate` 或者更早时调用
 
 ```html
 <template>
@@ -75,7 +75,7 @@ version: 2.1
 </template>
 <script>
     module.exports = {
-        mounted: function() {
+        beforeCreate: function() {
 
         var domModule = weex.requireModule('dom');
         //目前支持ttf、woff文件，不支持svg、eot类型,moreItem at http://www.iconfont.cn/
@@ -89,7 +89,7 @@ version: 2.1
 </script>
 ```
 
-[try it](http://dotwe.org/vue/6ece072d0abd9a9e5718eb26bd5719f8)
+[try it](http://dotwe.org/vue/95b2c6716f37066d5f44c5c75c979394)
 
 ## 示例
 

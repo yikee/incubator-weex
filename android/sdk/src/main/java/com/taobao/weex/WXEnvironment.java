@@ -65,9 +65,10 @@ public class WXEnvironment {
    */
   public static boolean sDebugMode = false;
   public static String sDebugWsUrl = "";
-  public static boolean sDebugServerConnectable = true;
+  public static boolean sDebugServerConnectable = false;
   public static boolean sRemoteDebugMode = false;
   public static String sRemoteDebugProxyUrl = "";
+  public static boolean sDebugNetworkEventReporterEnable = false;//debugtool network switch
   public static long sJSLibInitTime = 0;
 
   public static long sSDKInitStart = 0;// init start timestamp
@@ -79,8 +80,6 @@ public class WXEnvironment {
   public static LogLevel sLogLevel = LogLevel.DEBUG;
   private static boolean isApkDebug = true;
   public static boolean isPerf = false;
-
-  public static boolean sShow3DLayer=true;
 
   private static Map<String, String> options = new HashMap<>();
   static {
@@ -102,6 +101,7 @@ public class WXEnvironment {
     Map<String, String> configs = new HashMap<>();
     configs.put(WXConfig.os, OS);
     configs.put(WXConfig.appVersion, getAppVersionName());
+    configs.put(WXConfig.cacheDir, getAppCacheFile());
     configs.put(WXConfig.devId, DEV_Id);
     configs.put(WXConfig.sysVersion, SYS_VERSION);
     configs.put(WXConfig.sysModel, SYS_MODEL);
@@ -136,6 +136,21 @@ public class WXEnvironment {
     }
     return versionName;
   }
+
+  /**
+   *
+   * @return string cache file
+   */
+  private static String getAppCacheFile() {
+    String cache = "";
+    try {
+      cache = sApplication.getApplicationContext().getCacheDir().getPath();
+    } catch (Exception e) {
+      WXLogUtils.e("WXEnvironment getAppCacheFile Exception: ", e);
+    }
+    return cache;
+  }
+
 
   public static Map<String, String> getCustomOptions() {
     return options;
@@ -233,12 +248,16 @@ public class WXEnvironment {
     if (context == null) {
       return null;
     }
-    String cachePath;
-    if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-            || !Environment.isExternalStorageRemovable()) {
-      cachePath = context.getExternalCacheDir().getPath();
-    } else {
-      cachePath = context.getCacheDir().getPath();
+    String cachePath = null;
+    try {
+      if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+              || !Environment.isExternalStorageRemovable()) {
+        cachePath = context.getExternalCacheDir().getPath();
+      } else {
+        cachePath = context.getCacheDir().getPath();
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
     return cachePath;
   }

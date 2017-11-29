@@ -17,8 +17,9 @@
  * under the License.
  */
 
-import { extractComponentStyle, createEventMap } from '../core'
-import { extend } from '../utils'
+let extractComponentStyle, createEventMap, extend, isArray
+
+const IMG_NAME_BITS = 15
 
 const _css = `
 .weex-image, .weex-img {
@@ -27,9 +28,28 @@ const _css = `
 }
 `
 /**
- * get resize (stetch|cover|contain) related styles.
+ * 1. get sprite style if spritePosition is set.
+ * 2. else get resize (stetch|cover|contain) related styles.
  */
-function getResizeStyle (context) {
+function getCustomStyle (context, mergedStyle) {
+  let spritePosition = context.spritePosition
+  if (spritePosition && !isArray(spritePosition)) {
+    spritePosition = (spritePosition + '').split(',').map(function (val) {
+      return val.replace(/[[\]]/g, '').replace(/^\s*(\S[\s\S]*?)\s*$/g, function ($0, $1) {
+        return parseInt($1)
+      })
+    })
+  }
+  if (spritePosition) {
+    const posX = -spritePosition[0]
+    const posY = -spritePosition[1]
+    const scale = weex.config.env.scale
+    const sizeScale = parseFloat(context.spriteWidth) / parseFloat(mergedStyle.width) * weex.config.env.scale
+    return {
+      'background-position': `${posX * scale}px ${posY * scale}px`,
+      'background-size': `${sizeScale * 100}%`
+    }
+  }
   const stretch = '100% 100%'
   const resize = context.resize || stretch
   const bgSize = ['cover', 'contain', stretch].indexOf(resize) > -1 ? resize : stretch
@@ -53,14 +73,63 @@ function preProcessSrc (context, url, mergedStyle) {
   }) || url
 }
 
-export default {
+function download (url, callback) {
+  function success () {
+    callback && callback({
+      success: true
+    })
+  }
+  function fail (err) {
+    callback && callback({
+      success: false,
+      errorDesc: err + ''
+    })
+  }
+  try {
+    let isDataUrl = false
+    let parts
+    let name
+    if (url.match(/data:image\/[^;]+;base64,/)) {
+      isDataUrl = true
+      parts = url.split(',')
+    }
+    if (!isDataUrl) {
+      name = url
+        .replace(/\?[^?]+/, '')
+        .replace(/#[^#]+/, '')
+        .match(/([^/]+)$/)
+    }
+    else {
+      name = parts[1].substr(0, IMG_NAME_BITS)
+    }
+    const aEl = document.createElement('a')
+    aEl.href = url
+    /**
+     * Not all browser support this 'download' attribute. In these browsers it'll jump
+     * to the photo url page and user have to longpress the photo to save it.
+     */
+    aEl.download = name
+    const clickEvt = new Event('click', { bubbles: false })
+    aEl.dispatchEvent(clickEvt)
+    success()
+  }
+  catch (err) {
+    fail(err)
+  }
+}
+
+const image = {
+  name: 'weex-image',
   props: {
     src: String,
     placeholder: String,
     resize: String,
     quality: String,
     sharpen: String,
-    original: [String, Boolean]
+    original: [String, Boolean],
+    spriteSrc: String,
+    spritePosition: [String, Array],
+    spriteWidth: [String, Number]
   },
 
   updated () {
@@ -71,25 +140,40 @@ export default {
     this._fireLazyload()
   },
 
+  methods: {
+    save (callback) {
+      download(this.src, callback)
+    }
+  },
+
   render (createElement) {
-    /* istanbul ignore next */
-    // if (process.env.NODE_ENV === 'development') {
-    //   validateStyles('image', this.$vnode.data && this.$vnode.data.staticStyle)
-    // }
-    // const style = this._normalizeInlineStyles(this.$vnode.data)
-    const resizeStyle = getResizeStyle(this)
     const style = extractComponentStyle(this)
-    this._renderHook()
+    const customStyle = getCustomStyle(this, style)
     return createElement('figure', {
       attrs: {
         'weex-type': 'image',
-        'img-src': preProcessSrc(this, this.src, style),
-        'img-placeholder': preProcessSrc(this, this.placeholder, style)
+        'img-src': this.spriteSrc || preProcessSrc(this, this.src, style),
+        'img-placeholder': preProcessSrc(this, this.placeholder, style),
+        'sprite-src': this.spriteSrc,
+        'sprite-position': this.spritePosition,
+        'sprite-width': this.spriteWidth
       },
       on: createEventMap(this, ['load', 'error']),
       staticClass: 'weex-image weex-el',
-      staticStyle: extend(style, resizeStyle)
+      staticStyle: extend(style, customStyle)
     })
   },
   _css
+}
+
+export default {
+  init (weex) {
+    extractComponentStyle = weex.extractComponentStyle
+    createEventMap = weex.createEventMap
+    extend = weex.utils.extend
+    isArray = weex.utils.isArray
+
+    weex.registerComponent('image', image)
+    weex.registerComponent('img', image)
+  }
 }

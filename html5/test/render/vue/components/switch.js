@@ -28,18 +28,14 @@ init('<switch> component', (Vue, helper) => {
 
   it('simple <switch> component', () => {
     const vm = compile(`<switch></switch>`)
-
-    // console.log(vm.$el)
-    expect(vm.$el.tagName).to.be.equal('SPAN')
+    expect(vm.$el.tagName.toLowerCase()).to.be.equal('span')
     expect(utils.toArray(vm.$el.classList)).to.include('weex-switch')
-    expect(vm.$el.innerHTML).to.be.equal('<small class="weex-switch-inner"></small>')
   })
 
   it('disabled <switch>', () => {
     const vmA = compile(`<switch disabled="true"></switch>`)
     const vmB = compile(`<switch disabled></switch>`)
     const vmC = compile(`<switch disabled="disabled"></switch>`)
-
     expect(vmA.$el.className).to.match(/weex\-switch\-disabled/)
     expect(vmB.$el.className).to.match(/weex\-switch\-disabled/)
     expect(vmC.$el.className).to.match(/weex\-switch\-disabled/)
@@ -49,8 +45,8 @@ init('<switch> component', (Vue, helper) => {
     const vmA = compile(`<switch></switch>`)
     const vmB = compile(`<switch disabled="false"></switch>`)
 
-    expect(vmA.$el.className).to.be.equal('weex-switch')
-    expect(vmB.$el.className).to.be.equal('weex-switch')
+    expect(vmA.$el.className).to.match(/weex-switch/)
+    expect(vmB.$el.className).to.match(/weex-switch/)
   })
 
   it('checked <switch>', () => {
@@ -64,8 +60,7 @@ init('<switch> component', (Vue, helper) => {
   })
 
   it('toggle <switch>', () => {
-    const vm = new Vue(_switch)
-
+    const vm = compile(`<switch ref="switch"></switch>`).$refs.switch
     expect(vm.isChecked).to.not.be.true
     vm.toggle()
     expect(vm.isChecked).to.be.true
@@ -74,7 +69,7 @@ init('<switch> component', (Vue, helper) => {
   })
 
   it('toggle & disabled <switch>', () => {
-    const vm = new Vue(_switch)
+    const vm = compile(`<switch ref="switch"></switch>`).$refs.switch
     vm.isDisabled = true
 
     expect(vm.isChecked).to.not.be.true
@@ -86,8 +81,8 @@ init('<switch> component', (Vue, helper) => {
     const vmA = compile(`<switch></switch>`)
     const vmB = compile(`<switch checked="false"></switch>`)
 
-    expect(vmA.$el.className).to.be.equal('weex-switch')
-    expect(vmB.$el.className).to.be.equal('weex-switch')
+    expect(vmA.$el.className).to.match(/weex-switch/)
+    expect(vmB.$el.className).to.match(/weex-switch/)
   })
 
   it('disabled & checked <switch>', () => {

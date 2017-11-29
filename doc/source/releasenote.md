@@ -6,6 +6,87 @@ layout: post
 
 # Release Note
 
+## v0.17
+-----
+
+* `feature` `Android/iOS` Support `writing direction style:direction=rtl`([#782](https://github.com/apache/incubator-weex/pull/782)[#886](https://github.com/apache/incubator-weex/pull/886))
+* `feature` `Android/iOS` Support scroll start and scroll end event on scroller and list ([#858](https://github.com/apache/incubator-weex/pull/858)[856](https://github.com/apache/incubator-weex/pull/856))
+* `feature` `iOS` support text max-width （[#834](https://github.com/apache/incubator-weex/pull/834)）
+* `feature` `Android` CSS Transiton Animation Supported component ([#851](https://github.com/apache/incubator-weex/pull/851))
+* `feature` `Android` New `local` module ([#781](https://github.com/apache/incubator-weex/pull/781))
+* `feature` `Android` Support ripple background on Android 5.0 and higher ([#792](https://github.com/apache/incubator-weex/pull/792))
+* `feature` `Android` Support multi language on dialog ([#831](https://github.com/apache/incubator-weex/pull/831))
+* `feature` `H5` Support lazyload and appear watcher when body height set to 100% ([#827](https://github.com/apache/incubator-weex/pull/827)).
+* `feature` `H5` Add try catch for storage accessing incase user disabled the related function in a browser ([#827](https://github.com/apache/incubator-weex/pull/827)).
+* `feature` `H5` image support css sprite (sprite-src, sprite-position, sprite-width) ([#827](https://github.com/apache/incubator-weex/pull/827)).
+* `feature` `JSFM` Support batch update styles and attributes in Vue.js ([#819](https://github.com/apache/incubator-weex/pull/819) [#7046](https://github.com/vuejs/vue/pull/7046))
+* `feature` `JSFM` Stop trimming CSS units in richtext component. ([#6927](https://github.com/vuejs/vue/pull/6927))
+* `feature` `JSFM` Stop rethrow the captured error on Weex platform. ([#7024](https://github.com/vuejs/vue/pull/7024))
+* `feature` `JSFM` Upgrade weex-vue-framework to 2.5.3 ([release nodes](https://github.com/vuejs/vue/releases/tag/v2.5.3))
+* `feature` `JSFM` Adjust the behavior of `nextTick` to improve compatibility.
+* `bugfix` `iOS` bugfix boxshadow render abnormal （[#791](https://github.com/apache/incubator-weex/pull/791)）
+* `bugfix` `iOS` bugfix timer exposed on JSContxt （[#839](https://github.com/apache/incubator-weex/pull/839)）
+* `bugfix` `iOS` fix iOS8 scrollview’s assign delegate crash （[#838](https://github.com/apache/incubator-weex/pull/838)）
+* `bugfix` `iOS` fix setViewport：sometimes doesn’t work（[#843](https://github.com/apache/incubator-weex/pull/843)）
+* `bugfix` `iOS` fix addEvent lead to generate a new view while it as been recycled （[#837](https://github.com/apache/incubator-weex/pull/837)）
+* `bugfix` `iOS` fix about setting nan frame crash （[#853](https://github.com/apache/incubator-weex/pull/853)）
+* `bugfix` `iOS` disable tableview estimation row or section height which make list component behavior abnormal （[#867](https://github.com/apache/incubator-weex/pull/867)）
+* `bugfix` `Android` Fix that moveElement doesn’t work when parent is not a list ([#805](https://github.com/apache/incubator-weex/pull/805))
+* `bugfix` `Android` Fix flicker caused by coexistence of box-shadow and border-radius (#[780](https://github.com/apache/incubator-weex/pull/780))
+* `bugfix` `Android` Fix android new Date() cannot get accuracy time ([#753](https://github.com/apache/incubator-weex/pull/753))
+* `bugfix` `H5` Fix scroll event listenning and scrollToElement on chrome for the latest version ([#827](https://github.com/apache/incubator-weex/pull/827)).
+
+## v0.16
+-----
+* + support 3d rotate ([#532](https://github.com/apache/incubator-weex/pull/532) [#418](https://github.com/apache/incubator-weex/pull/418))
+* + new feature support perspective function in transform ([#551](https://github.com/apache/incubator-weex/pull/551)[#532](https://github.com/apache/incubator-weex/pull/532))
+* + new feature support save image to photo album ([547](https://github.com/apache/incubator-weex/pull/547) [575](https://github.com/apache/incubator-weex/pull/575) [544](https://github.com/apache/incubator-weex/pull/544))
+* + support `image.save` ([#575](https://github.com/apache/incubator-weex/pull/575)).
+* + optimize event binding and support mobile firefox, and also fix a lot of other things ([#606](https://github.com/apache/incubator-weex/pull/606)).
+* + Support js service in Rax DSL.
+* + Partial support of sending `ArrayBuffer` between js and native.
+* + Add basic support of `<recycle-list>`, both in Vue and Rax DSL.
+* + Support saving image to photo alubm in `image` [#547](https://github.com/apache/incubator-weex/pull/547)
+* + Support perspective features [#551](https://github.com/apache/incubator-weex/pull/551)
+* + New interface to performance tracing [#586](https://github.com/apache/incubator-weex/pull/586)
+* + Add the ability of FlatGUI, it can reduce the view hierarchy in `cell` [#643](https://github.com/apache/incubator-weex/pull/643)
+* + Support the `box-shadow` style for Android 4.3 and higher [#685](https://github.com/apache/incubator-weex/pull/685)
+* + Support float interval/delay in timer [#699](https://github.com/apache/incubator-weex/pull/699)
+* + New `recycle-list` compoent with hight performance and low memory cost [#726](https://github.com/apache/incubator-weex/pull/726)
+* * remove dependency about socketRocket dependency in iOS.
+* * fix coretext crash in iOS.
+* * fix toast view still pop while the page was destroyed in iOS.
+* * separate weex-vue-render into two parts: render core and plugins ([#533](https://github.com/apache/incubator-weex/pull/533)).
+* * Fix Jni crash due to emoji [#574](https://github.com/apache/incubator-weex/pull/574)
+* * Fix the lost refresh header of `list` in viewpager [#601](https://github.com/apache/incubator-weex/pull/601)
+* * Fix draw iconfont fail when first download iconfont [#625](https://github.com/apache/incubator-weex/pull/625)
+* * Fix the problem of 'text-overflow:clip' [#718](https://github.com/apache/incubator-weex/pull/718)
+* * Fix android new Date() cannot get accuracy time [#753](https://github.com/apache/incubator-weex/pull/753)
+
+## v0.15
+------
+* + support fast click and hairlines border [#507](https://github.com/apache/incubator-weex/pull/507).
+* + Add `weex.supports` api for feature detections. [#6053](https://github.com/vuejs/vue/pull/6053)
+* + Change default image quality to `WXImageQuality.AUTO` [#478](https://github.com/apache/incubator-weex/pull/478)
+* + Support the `scroll` event on horizontal scroller[#494](https://github.com/apache/incubator-weex/pull/494)
+* * Fix the console API to adapt JSC on Android. [#470](https://github.com/apache/incubator-weex/pull/470)
+* * Fix invalid call scrollToElement when has not option param [#491](https://github.com/apache/incubator-weex/pull/491)
+* * Fix the lines of `text` cannot be reset [#493](https://github.com/apache/incubator-weex/pull/493)
+* * Fix invalid init index on `slider` [#510](https://github.com/apache/incubator-weex/pull/510)
+* * Fix Memory optimization for `list` [#512](https://github.com/apache/incubator-weex/pull/512)
+
+## v0.14
+------
+* + support `waterfall` component ([#438](https://github.com/apache/incubator-weex/pull/438)).
+* + support pseudo-class ([#474](https://github.com/apache/incubator-weex/pull/474)).
+* + Support component method in Vue DSL. ([proposal](https://github.com/alibaba/weex/issues/969))
+* + Support returning value synchronously for module methods. ([proposal](https://github.com/alibaba/weex/issues/1677))
+* + Support drag-drop on `list` [#416](https://github.com/apache/incubator-weex/pull/416)
+* + Support rotateX and rotateY, optimize animation as well [#418](https://github.com/apache/incubator-weex/pull/418)
+* * Fix wrong vertical offset in scroll event on `waterfall` [#424](https://github.com/apache/incubator-weex/pull/424)
+* * Fix `clearTimeout` and `clearInterval` doesn't work when funId is greater than 127 [#439](https://github.com/apache/incubator-weex/pull/439)
+
+
 ## v0.13.0
 ------
 ### Notable Changes
